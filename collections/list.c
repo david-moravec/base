@@ -8,103 +8,71 @@
 
 typedef unsigned char byte;
 
-void list_init(struct list *list, size_t el_size, size_t init_size) {
-  list->size = init_size > 0 ? init_size : DEFAULT_INIT_SIZE;
-  list->el_size = el_size;
-  list->count = 0;
-  list->data = (void *)malloc(list->el_size * list->size);
-  memset(list->data, 0, list->el_size * list->size);
-}
-
-void list_free(struct list *list) {
-  free(list->data);
-  list->data = NULL;
-  list->el_size = 0;
-  list->size = 0;
-}
-
 static void *_get(void *base, size_t el_size, size_t index) {
   return &((byte *)base)[index * el_size];
 }
 
-void *list_get(struct list *list, size_t index) {
-  if (index >= list->count) {
+static void _list_shift_left(void *data, size_t count, size_t element_size,
+                             size_t index) {
+  for (size_t i = index; i <= count; i++) {
+    memcpy(_list_get(data, count, element_size, i),
+           _list_get(data, count, element_size, i + 1), element_size);
+  }
+}
+
+void *_list_get(void *data, size_t count, size_t element_size, size_t index) {
+  if (index >= count) {
     return NULL;
   }
 
-  return _get(list->data, list->el_size, index);
+  return _get(data, element_size, index);
 }
 
-void *list_tail(struct list *list) { return list_get(list, list->count); }
-void *list_head(struct list *list) { return list_get(list, 0); }
-
-void list_grow(struct list *list) {
-  size_t old_size = list->size;
-  size_t new_size = SIZE_MULTIPLIER * old_size;
-  list->data = realloc(list->data, new_size * list->el_size);
-  list->size = new_size;
+void *_list_tail(void *data, size_t count, size_t element_size) {
+  return _list_get(data, count, element_size, count);
+}
+void *_list_head(void *data, size_t count, size_t element_size) {
+  return _list_get(data, count, element_size, 0);
 }
 
-void check_grow_list(struct list *list) {
-  if (list->count == list->size) {
-    list_grow(list);
+void *_list_append(void *data, size_t size, size_t *count, size_t element_size,
+                   size_t *index) {
+  if (*count == size) {
+    return NULL;
   }
-}
-
-void *list_append(struct list *list, size_t *index) {
-  check_grow_list(list);
 
   if (index != NULL) {
-    *index = list->count;
+    *index = *count;
   }
 
-  list->count++;
+  (*count)++;
 
-  return list_get(list, list->count - 1);
+  return _list_tail(data, (*count) - 1, element_size);
 }
 
-void *list_append_copy(struct list *list, void *element, size_t *index) {
-  void *dest = list_append(list, index);
-  memcpy(dest, element, list->el_size);
-  return dest;
-}
+void *_list_push(void *data, size_t size, size_t *count, size_t element_size,
+                 void *element, size_t *index) {
+  void *new_entry = _list_append(data, size, count, element_size, index);
 
-void *list_append_many(struct list *list, void *elements, size_t len_elements,
-                       size_t *end_index) {
-
-  void *final_dest;
-
-  for (size_t i = 0; i < len_elements; i++) {
-    void *final_dest = list_append(list, end_index);
-    final_dest = &elements[i * list->el_size];
-  }
-
-  return final_dest;
-}
-
-void *list_insert_copy(struct list *list, void *element, size_t index) {
-  if (index > list->count) {
+  if (new_entry == NULL) {
     return NULL;
   }
 
-  void *dest = list_get(list, index);
-  memcpy(dest, element, list->el_size);
-  return dest;
+  memcpy(new_entry, element, element_size);
+  return new_entry;
 }
 
-// void list_shift_up(struct list *list, size_t index) {
-//   size_t orig_size = list->size;
-
-//   check_grow_list(list);
-
-//   for (size_t i = orig_size; i >= index; i--) {
-//     memcpy(list_get(list, i + 1), list_get(list, i), list->el_size);
-//   }
-// }
-
-void *list_remove(struct list *list, size_t index) {
-  void *dest = list_get(list, index);
+void *_list_remove(void *data, size_t *count, size_t element_size,
+                   size_t index) {
+  void *dest = _list_get(data, *count, element_size, index);
   void *result = dest;
-  dest = NULL;
+  _list_shift_left(data, *count, element_size, index);
+  (*count)--;
+  return result;
+}
+
+void *_list_pop(void *data, size_t *count, size_t element_size) {
+  void *result = _list_tail(data, *count, element_size);
+  (*count)--;
   return result;
 }
