@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "arena/arena.h"
 #include "list.h"
 
 #define DEFAULT_INIT_SIZE 32
@@ -19,6 +20,8 @@ static void _list_shift_left(void *data, size_t count, size_t element_size,
            _list_get(data, count, element_size, i + 1), element_size);
   }
 }
+
+// void _list_init(void *base, size_t element_size, size_t size) {}
 
 void *_list_get(void *data, size_t count, size_t element_size, size_t index) {
   if (index >= count) {
