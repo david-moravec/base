@@ -1,5 +1,6 @@
 #include "arena.h"
 #include <stdlib.h>
+#include <string.h>
 #include <sys/mman.h>
 
 #include <stddef.h>
@@ -30,6 +31,7 @@ Arena *arena_alloc(size_t reserved_size, size_t alignment) {
   arena->reserved_size = reserved_size;
   arena->commited_size = 0;
   arena->pos = 0;
+  arena->base_ptr = block;
 
   return arena;
 }
@@ -45,7 +47,7 @@ void arena_release(Arena *arena) {
   arena = NULL;
 }
 
-void *arena_push(Arena *arena, size_t size) {
+void *arena_push_no_zero(Arena *arena, size_t size) {
   if (arena == NULL || size == 0) {
     return NULL;
   }
@@ -63,19 +65,23 @@ void *arena_push(Arena *arena, size_t size) {
                  PROT_READ | PROT_WRITE) != 0) {
       return NULL;
     }
-
     arena->commited_size += to_commit;
   }
-
   void *memory = arena->base_ptr + arena->pos;
   arena->pos += size;
 
   return memory;
 }
 
-void *arena_push_zero(Arena *arena, size_t size) {
-  arena_clear(arena);
-  return arena_push(arena, size);
+void *arena_push(Arena *arena, size_t size) {
+  void *mem = arena_push_no_zero(arena, size);
+  memset(mem, 0, size);
+
+  return mem;
+}
+
+void *arena_realloc(Arena *arena, void *ptr, size_t old_size, size_t new_size) {
+  return arena_push(arena, new_size);
 }
 
 void arena_pop(Arena *arena, size_t size) { arena->pos -= size; }
