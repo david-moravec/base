@@ -1,5 +1,5 @@
 #include "arena.h"
-#include "collections/list.h"
+#include "list.h"
 #include "utest.h"
 
 TEST(test_push) {

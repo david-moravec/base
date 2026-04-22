@@ -1,6 +1,6 @@
 project('base-lib', 'c')
 
-inc = include_directories('arena', 'collections', 'utest')
+inc = include_directories('include', 'utest')
 
 lib_sources = files(
   'arena/arena.c',
