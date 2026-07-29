@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "list.h"
+#include "../include/list.h"
 
 #define DEFAULT_INIT_SIZE 32
 #define SIZE_MULTIPLIER 2
