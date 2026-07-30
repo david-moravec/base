@@ -1,6 +1,6 @@
-#include "arena.h"
-#include "list.h"
-#include "utest.h"
+#include "../include/arena.h"
+#include "../include/list.h"
+#include "../utest/utest.h"
 
 TEST(test_push) {
   Arena *arena = arena_alloc(4096, 0);
