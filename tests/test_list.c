@@ -15,13 +15,13 @@ TEST(test_push) {
 
   for (int i = 0; i < 100; i++) {
     float a = i * 1.0;
-    list_push(list_f, &a);
+    list_push(list_f, a);
   }
 
   ASSERT((list_f.count) == 100, "");
 
   for (int i = 0; i < 100; i++) {
-    ASSERT((*list_get(list_f, i) == i * 1.0), "");
+    ASSERT((list_get(list_f, i) == i * 1.0), "");
   }
 }
 
@@ -45,15 +45,15 @@ TEST(test_push_foo) {
     Foo a;
     a.a = (i + 1);
     a.b = (i + 1) * 2.0;
-    list_push(list_f, &a);
+    list_push(list_f, a);
   }
 
   ASSERT((list_f.count) == 100, "");
 
   for (int i = 0; i < 100; i++) {
-    Foo *a = list_get(list_f, i);
-    ASSERT((a->a == i + 1), "");
-    ASSERT((a->b == (i + 1) * 2.0), "");
+    Foo a = list_get(list_f, i);
+    ASSERT((a.a == i + 1), "");
+    ASSERT((a.b == (i + 1) * 2.0), "");
   }
 }
 
