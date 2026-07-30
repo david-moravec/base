@@ -1,7 +1,9 @@
-#include "arena.h"
+#include "../include/arena.h"
+#include <memory.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/mman.h>
+
+#include "../include/memory.h"
 
 #include <stddef.h>
 #include <unistd.h>
@@ -9,13 +11,9 @@
 size_t page_size(void) {
   static size_t size = 0;
   if (size == 0) {
-    size = (size_t)sysconf(_SC_PAGESIZE);
+    size = platform_memory_default_page_size();
   }
   return size;
-}
-
-static size_t _align_size_to(size_t size, size_t alignment) {
-  return (size + alignment - 1) / alignment * alignment;
 }
 
 Arena *arena_alloc(size_t reserved_size, size_t alignment) {
@@ -26,8 +24,7 @@ Arena *arena_alloc(size_t reserved_size, size_t alignment) {
     arena->alignment = alignment;
   }
 
-  void *block = mmap(NULL, _align_size_to(reserved_size, arena->alignment),
-                     PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  void *block = platform_memory_allocate_block(reserved_size, arena->alignment);
   arena->reserved_size = reserved_size;
   arena->commited_size = 0;
   arena->pos = 0;
@@ -61,8 +58,8 @@ void *arena_push_no_zero(Arena *arena, size_t size) {
 
   if (new_pos > arena->commited_size) {
     size_t to_commit = new_pos - arena->commited_size;
-    if (mprotect(arena->base_ptr + arena->commited_size, to_commit,
-                 PROT_READ | PROT_WRITE) != 0) {
+    if (!platform_memory_check_to_commit_protect(
+            arena->base_ptr + arena->commited_size, to_commit)) {
       return NULL;
     }
     arena->commited_size += to_commit;
