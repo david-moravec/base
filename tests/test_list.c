@@ -148,7 +148,7 @@ TEST(test_append) {
 }
 
 TEST(test_iterate) {
-  Arena *arena = arena_alloc(4096, 0);
+  Arena *arena = arena_alloc(1 << 20, 0);
   typedef List(int) ListInt;
   ListInt list;
   list_init(&list, arena);
@@ -162,6 +162,7 @@ TEST(test_iterate) {
   int sum_actual = 0;
   size_t idx;
   for (list_iterate(list, idx)) {
+    int current_elemtn = list_get(list, idx);
     sum_actual += list_get(list, idx);
   }
   ASSERT((sum_actual == sum_expected), "");
@@ -250,13 +251,13 @@ int main() {
   RUN_TEST(test_head);
   RUN_TEST(test_tail);
   RUN_TEST(test_pop);
-  // RUN_TEST(test_remove_middle);
-  // RUN_TEST(test_remove_first);
+  RUN_TEST(test_remove_middle);
+  RUN_TEST(test_remove_first);
   RUN_TEST(test_remove_last);
   RUN_TEST(test_append);
   RUN_TEST(test_iterate);
-  RUN_TEST(test_growth);
-  // RUN_TEST(test_struct_head_tail_pop_remove);
+  // RUN_TEST(test_growth);
+  RUN_TEST(test_struct_head_tail_pop_remove);
   RUN_TEST(test_independent_lists_same_arena);
   SUMMARY();
 }

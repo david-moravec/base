@@ -29,20 +29,22 @@ static void _list_shift_left(void *data, size_t count, size_t element_size,
   }
 }
 
-static size_t _grow_list(void **data, size_t size, Arena *arena) {
+static size_t _grow_list(void **data, size_t size, size_t element_size,
+                         Arena *arena) {
   if (arena == NULL) {
     return size;
   }
 
   if (data == NULL) {
     size = size == 0 ? DEFAULT_INIT_SIZE : size;
-    *data = arena_push(arena, size);
+    *data = arena_push(arena, size * element_size);
 
     return size;
   } else {
     size_t new_size =
         size <= DEFAULT_INIT_SIZE ? DEFAULT_INIT_SIZE : size * SIZE_MULTIPLIER;
-    *data = arena_realloc(arena, data, size, new_size);
+    *data = arena_realloc(arena, *data, size * element_size,
+                          new_size * element_size);
 
     return new_size;
   }
@@ -72,7 +74,7 @@ void *_list_append(void **data, size_t *size, size_t *count,
   }
 
   if (*count == *size) {
-    size_t new_size = _grow_list(data, *size, arena);
+    size_t new_size = _grow_list(data, *size, element_size, arena);
 
     if (new_size == *size) {
       return NULL;
@@ -86,9 +88,9 @@ void *_list_append(void **data, size_t *size, size_t *count,
   return _list_tail(*data, *count, element_size);
 }
 
-void *_list_push(void **data, size_t size, size_t *count, size_t element_size,
+void *_list_push(void **data, size_t *size, size_t *count, size_t element_size,
                  void *element, Arena *arena) {
-  void *new_entry = _list_append(data, &size, count, element_size, arena);
+  void *new_entry = _list_append(data, size, count, element_size, arena);
 
   if (new_entry == NULL) {
     return NULL;
