@@ -256,7 +256,7 @@ int main() {
   RUN_TEST(test_remove_last);
   RUN_TEST(test_append);
   RUN_TEST(test_iterate);
-  // RUN_TEST(test_growth);
+  RUN_TEST(test_growth);
   RUN_TEST(test_struct_head_tail_pop_remove);
   RUN_TEST(test_independent_lists_same_arena);
   SUMMARY();
