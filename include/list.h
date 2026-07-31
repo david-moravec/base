@@ -37,8 +37,8 @@ void *_list_tail(void *data, size_t count, size_t element_size);
   } while (0)
 
 #define list_append(list)                                                      \
-  (_list_append((void **)&(list).data, (list).size, &(list).count,             \
-                (list).element_size, NULL, (list).arena))
+  (_list_append((void **)&(list).data, &(list).size, &(list).count,            \
+                (list).element_size, (list).arena))
 
 #define list_push(list, element)                                               \
   (_list_push((void **)&(list).data, (list).size, &(list).count,               \
@@ -50,18 +50,19 @@ void *_list_tail(void *data, size_t count, size_t element_size);
                                       (list).element_size, (index)))
 
 #define list_pop(list)                                                         \
-  (*(typeof((list).data))(_list_pop((list).data, &(list).count, (list).element_size))
+  (*(typeof((list).data))(_list_pop((list).data, &(list).count,                \
+                                    (list).element_size)))
 
 #define list_get(list, index)                                                  \
   *(typeof((list).data))(_list_get((list).data, (list).count,                  \
                                    (list).element_size, (index)))
 
 #define list_head(list)                                                        \
-  (typeof((list).data))(_list_head((list).data, &(list).count,                 \
+  (typeof((list).data))(_list_head((list).data, (list).count,                  \
                                    (list).element_size))
 
 #define list_tail(list)                                                        \
-  (typeof((list).data))(_list_tail((list).data, &(list).count,                 \
+  (typeof((list).data))(_list_tail((list).data, (list).count,                  \
                                    (list).element_size))
 
 #define list_iterate(list, index)                                              \
