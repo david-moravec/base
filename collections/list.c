@@ -42,7 +42,7 @@ static size_t _grow_list(void **data, size_t size, size_t element_size,
     return size;
   } else {
     size_t new_size =
-        size <= DEFAULT_INIT_SIZE ? DEFAULT_INIT_SIZE : size * SIZE_MULTIPLIER;
+        size < DEFAULT_INIT_SIZE ? DEFAULT_INIT_SIZE : size * SIZE_MULTIPLIER;
     *data = arena_realloc(arena, *data, size * element_size,
                           new_size * element_size);
 
