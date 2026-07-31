@@ -1,4 +1,3 @@
-rm -r builddir
-meson setup builddir
-cd builddir
+meson setup build
+cd build
 meson compile
