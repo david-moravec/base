@@ -14,9 +14,18 @@ static void *_get(void *base, size_t el_size, size_t index) {
 
 static void _list_shift_left(void *data, size_t count, size_t element_size,
                              size_t index) {
-  for (size_t i = index; i <= count; i++) {
-    memcpy(_list_get(data, count, element_size, i),
-           _list_get(data, count, element_size, i + 1), element_size);
+  for (size_t i = index; i < count; i++) {
+    void *current = _list_get(data, count, element_size, i);
+    void *next = _list_get(data, count, element_size, i + 1);
+
+    if (i == count - 1) {
+      // last element needs to be nulled
+      // it was shifted left the previous iteration
+
+      memset(current, 0, element_size);
+    } else {
+      memcpy(current, next, element_size);
+    }
   }
 }
 
