@@ -10,8 +10,8 @@ void *_list_append(void **data, size_t *size, size_t *count,
                    size_t element_size, Arena *arena);
 void *_list_push(void **data, size_t *size, size_t *count, size_t element_size,
                  void *element, Arena *arena);
-void *_list_remove(void *data, size_t *count, size_t element_size,
-                   size_t index);
+void _list_remove(void *data, size_t *count, size_t element_size, size_t index,
+                  void *removed_element_storage);
 void *_list_pop(void *data, size_t *count, size_t element_size);
 
 void *_list_get(void *data, size_t count, size_t index, size_t element_size);
@@ -45,9 +45,9 @@ void *_list_tail(void *data, size_t count, size_t element_size);
               (list).element_size, 1 ? &(element) : ((list).data),             \
               (list).arena))
 
-#define list_remove(list, index)                                               \
-  (*(typeof((list).data))_list_remove((list).data, &(list).count,              \
-                                      (list).element_size, (index)))
+#define list_remove(list, index, removed_element_storage)                      \
+  _list_remove((list).data, &(list).count, (list).element_size, (index),       \
+               (removed_element_storage))
 
 #define list_pop(list)                                                         \
   (*(typeof((list).data))(_list_pop((list).data, &(list).count,                \

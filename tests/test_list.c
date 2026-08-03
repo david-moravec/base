@@ -90,7 +90,8 @@ TEST(test_remove_middle) {
     list_push(list, v);
   }
   /* remove index 5 (value 5); remaining values shift left */
-  int removed = list_remove(list, 5);
+  int removed = 0;
+  list_remove(list, 5, &removed);
   ASSERT((removed == 5), "");
   ASSERT((list.count == 9), "");
 
@@ -109,7 +110,8 @@ TEST(test_remove_first) {
     int v = i;
     list_push(list, v);
   }
-  int removed = list_remove(list, 0);
+  int removed = -1;
+  list_remove(list, 0, &removed);
   ASSERT((removed == 0), "");
   ASSERT((list.count == 4), "");
   ASSERT((list_get(list, 0) == 1), "");
@@ -124,7 +126,8 @@ TEST(test_remove_last) {
     int v = i;
     list_push(list, v);
   }
-  int removed = list_remove(list, list.count - 1);
+  int removed = 0;
+  list_remove(list, list.count - 1, &removed);
   ASSERT((removed == 4), "");
   ASSERT((list.count == 4), "");
 }
@@ -163,7 +166,7 @@ TEST(test_iterate) {
   size_t idx;
   for (list_iterate(list, idx)) {
     int current_elemtn = list_get(list, idx);
-    sum_actual += list_get(list, idx);
+    sum_actual += current_elemtn;
   }
   ASSERT((sum_actual == sum_expected), "");
 }
@@ -211,7 +214,8 @@ TEST(test_struct_head_tail_pop_remove) {
   ASSERT((popped.a == 9 && popped.b == 90.0), "");
   ASSERT((list.count == 9), "");
 
-  Foo removed = list_remove(list, 0);
+  Foo removed;
+  list_remove(list, 0, &removed);
   ASSERT((removed.a == 0 && removed.b == 0.0), "");
   ASSERT((list.count == 8), "");
   Foo new_head = list_get(list, 0);

@@ -100,14 +100,14 @@ void *_list_push(void **data, size_t *size, size_t *count, size_t element_size,
   return new_entry;
 }
 
-void *_list_remove(void *data, size_t *count, size_t element_size,
-                   size_t index) {
-  void *dest = _list_get(data, *count, element_size, index);
-  void *result = dest;
+void _list_remove(void *data, size_t *count, size_t element_size, size_t index,
+                  void *removed_element_storage) {
+  void *to_remove = _list_get(data, *count, element_size, index);
+  if (removed_element_storage != NULL) {
+    memcpy(removed_element_storage, to_remove, element_size);
+  }
   _list_shift_left(data, *count, element_size, index);
   (*count)--;
-
-  return result;
 }
 
 void *_list_pop(void *data, size_t *count, size_t element_size) {
