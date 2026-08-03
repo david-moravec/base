@@ -20,10 +20,10 @@ TEST(test_get_bounds) {
   list_init(&list, arena);
   for (int i = 0; i < 10; i++) {
     int v = i * i;
-    list_push(list, v);
+    list_push(&list, v);
   }
   for (int i = 0; i < 10; i++) {
-    ASSERT((list_get(list, i) == i * i), "");
+    ASSERT((*list_get(list, i) == i * i), "");
   }
   ASSERT((list.count == 10), "");
 }
@@ -35,14 +35,14 @@ TEST(test_head) {
   list_init(&list, arena);
   for (int i = 0; i < 5; i++) {
     int v = i + 100;
-    list_push(list, v);
+    list_push(&list, v);
   }
   int *head = list_head(list);
   ASSERT((*head == 100), "");
 
   /* writing through the head pointer should be visible via list_get */
   *head = 999;
-  ASSERT((list_get(list, 0) == 999), "");
+  ASSERT((*list_get(list, 0) == 999), "");
 }
 
 TEST(test_tail) {
@@ -52,13 +52,13 @@ TEST(test_tail) {
   list_init(&list, arena);
   for (int i = 0; i < 5; i++) {
     int v = i + 100;
-    list_push(list, v);
+    list_push(&list, v);
   }
   int *tail = list_tail(list);
   ASSERT((*tail == 104), "");
 
   *tail = 999;
-  ASSERT((list_get(list, list.count - 1) == 999), "");
+  ASSERT((*list_get(list, list.count - 1) == 999), "");
 }
 
 TEST(test_pop) {
@@ -68,7 +68,7 @@ TEST(test_pop) {
   list_init(&list, arena);
   for (int i = 0; i < 5; i++) {
     int v = i;
-    list_push(list, v);
+    list_push(&list, v);
   }
   ASSERT((list.count == 5), "");
 
@@ -87,17 +87,17 @@ TEST(test_remove_middle) {
   list_init(&list, arena);
   for (int i = 0; i < 10; i++) {
     int v = i;
-    list_push(list, v);
+    list_push(&list, v);
   }
   /* remove index 5 (value 5); remaining values shift left */
   int removed = 0;
-  list_remove(list, 5, &removed);
+  list_remove(&list, 5, &removed);
   ASSERT((removed == 5), "");
   ASSERT((list.count == 9), "");
 
   int expected[] = {0, 1, 2, 3, 4, 6, 7, 8, 9};
   for (int i = 0; i < 9; i++) {
-    ASSERT((list_get(list, i) == expected[i]), "");
+    ASSERT((*list_get(list, i) == expected[i]), "");
   }
 }
 
@@ -108,13 +108,13 @@ TEST(test_remove_first) {
   list_init(&list, arena);
   for (int i = 0; i < 5; i++) {
     int v = i;
-    list_push(list, v);
+    list_push(&list, v);
   }
   int removed = -1;
-  list_remove(list, 0, &removed);
+  list_remove(&list, 0, &removed);
   ASSERT((removed == 0), "");
   ASSERT((list.count == 4), "");
-  ASSERT((list_get(list, 0) == 1), "");
+  ASSERT((*list_get(list, 0) == 1), "");
 }
 
 TEST(test_remove_last) {
@@ -124,10 +124,10 @@ TEST(test_remove_last) {
   list_init(&list, arena);
   for (int i = 0; i < 5; i++) {
     int v = i;
-    list_push(list, v);
+    list_push(&list, v);
   }
   int removed = 0;
-  list_remove(list, list.count - 1, &removed);
+  list_remove(&list, list.count - 1, &removed);
   ASSERT((removed == 4), "");
   ASSERT((list.count == 4), "");
 }
@@ -141,12 +141,12 @@ TEST(test_append) {
   /* list_append grows the list by one and returns a pointer to the
    * new (uninitialized/default) slot, which we then fill in */
   for (int i = 0; i < 20; i++) {
-    int *slot = list_append(list);
+    int *slot = list_append(&list);
     *slot = i * 2;
   }
   ASSERT((list.count == 20), "");
   for (int i = 0; i < 20; i++) {
-    ASSERT((list_get(list, i) == i * 2), "");
+    ASSERT((*list_get(list, i) == i * 2), "");
   }
 }
 
@@ -158,14 +158,14 @@ TEST(test_iterate) {
   int sum_expected = 0;
   for (int i = 0; i < 50; i++) {
     int v = i;
-    list_push(list, v);
+    list_push(&list, v);
     sum_expected += i;
   }
 
   int sum_actual = 0;
   size_t idx;
   for (list_iterate(list, idx)) {
-    int current_elemtn = list_get(list, idx);
+    int current_elemtn = *list_get(list, idx);
     sum_actual += current_elemtn;
   }
   ASSERT((sum_actual == sum_expected), "");
@@ -180,12 +180,12 @@ TEST(test_growth) {
   list_init(&list, arena);
   for (int i = 0; i < 1000; i++) {
     int v = i;
-    list_push(list, v);
+    list_push(&list, v);
     ASSERT((list.size >= list.count), "");
   }
   ASSERT((list.count == 1000), "");
   for (int i = 0; i < 1000; i++) {
-    ASSERT((list_get(list, i) == i), "");
+    ASSERT((*list_get(list, i) == i), "");
   }
 }
 
@@ -201,7 +201,7 @@ TEST(test_struct_head_tail_pop_remove) {
 
   for (int i = 0; i < 10; i++) {
     Foo f = {.a = i, .b = i * 10.0};
-    list_push(list, f);
+    list_push(&list, f);
   }
 
   Foo *head = list_head(list);
@@ -215,10 +215,10 @@ TEST(test_struct_head_tail_pop_remove) {
   ASSERT((list.count == 9), "");
 
   Foo removed;
-  list_remove(list, 0, &removed);
+  list_remove(&list, 0, &removed);
   ASSERT((removed.a == 0 && removed.b == 0.0), "");
   ASSERT((list.count == 8), "");
-  Foo new_head = list_get(list, 0);
+  Foo new_head = *list_get(list, 0);
   ASSERT((new_head.a == 1 && new_head.b == 10.0), "");
 }
 
@@ -234,18 +234,18 @@ TEST(test_independent_lists_same_arena) {
 
   for (int i = 0; i < 20; i++) {
     int v = i;
-    list_push(li, v);
+    list_push(&li, v);
   }
   for (int i = 0; i < 20; i++) {
     double v = i * 0.5;
-    list_push(ld, v);
+    list_push(&ld, v);
   }
 
   ASSERT((li.count == 20), "");
   ASSERT((ld.count == 20), "");
   for (int i = 0; i < 20; i++) {
-    ASSERT((list_get(li, i) == i), "");
-    ASSERT((list_get(ld, i) == i * 0.5), "");
+    ASSERT((*list_get(li, i) == i), "");
+    ASSERT((*list_get(ld, i) == i * 0.5), "");
   }
 }
 
