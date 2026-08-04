@@ -54,8 +54,8 @@ void *_list_tail(void *data, size_t count, size_t element_size);
                                     (list).element_size)))
 
 #define list_get(list, index)                                                  \
-  (typeof((list).data))(_list_get((list).data, (list).count,                   \
-                                  (list).element_size, (index)))
+  (typeof((list)->data))(_list_get((list)->data, (list)->count,                \
+                                   (list)->element_size, (index)))
 
 #define list_head(list)                                                        \
   (typeof((list).data))(_list_head((list).data, (list).count,                  \
@@ -67,7 +67,7 @@ void *_list_tail(void *data, size_t count, size_t element_size);
 
 #define list_iterate(list, index)                                              \
   (index) = 0;                                                                 \
-  (index) < (list).count;                                                      \
+  (index) < (list)->count;                                                     \
   (index)++
 
 #endif
