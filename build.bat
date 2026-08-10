@@ -1,3 +1,3 @@
-meson setup build
-cd build
+meson setup builddir
+cd builddir
 meson compile

@@ -8,7 +8,7 @@
             "name": "test list",
             "type": "lldb",
             "request": "launch",
-            "program": "${workspaceRoot}/build/test_list",
+            "program": "${workspaceRoot}/builddir/test_list",
             "args": [],
             "cwd": "${workspaceRoot}"
         }
