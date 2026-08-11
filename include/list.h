@@ -70,4 +70,14 @@ void *_list_tail(void *data, size_t count, size_t element_size);
   (index) < (list)->count;                                                     \
   (index)++
 
+typedef int (*compare_function)(const void *, const void *);
+
+#define list_sort(list, compare_func)                                          \
+  qsort(list_get((list), 0), (list)->count, (list)->element_size,              \
+        (compare_func))
+
+#define list_sort_in_interval(list, start, end, compare_func)                  \
+  qsort(list_get((list), (start)), (end) - (start), (list)->element_size,      \
+        (compare_func))
+
 #endif

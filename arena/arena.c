@@ -84,5 +84,12 @@ void *arena_realloc(Arena *arena, void *ptr, size_t old_size, size_t new_size) {
   return mem;
 }
 
+void *arena_push_copy(Arena *arena, size_t size, void *to_copy) {
+  void *mem = arena_push(arena, size);
+  memcpy(mem, to_copy, size);
+
+  return mem;
+}
+
 void arena_pop(Arena *arena, size_t size) { arena->pos -= size; }
 void arena_clear(Arena *arena) { arena->pos = 0; }
