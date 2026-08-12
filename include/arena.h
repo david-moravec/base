@@ -26,4 +26,8 @@ void arena_clear(Arena *arena);
 
 inline size_t arena_get_pos(Arena *arena) { return arena->pos; };
 
+#define ARENA_PUSH(arena, type) (type *)arena_push(arena, sizeof(type))
+#define ARENA_PUSH_COPY(arena, type, to_copy)                                  \
+  (type *)arena_push_copy(arena, sizeof(type), to_copy)
+
 #endif
