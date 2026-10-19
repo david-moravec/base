@@ -13,6 +13,11 @@ typedef struct {
   size_t alignment;
 } Arena;
 
+typedef struct {
+  Arena *arena;
+  size_t pos;
+} ArenaTemp;
+
 Arena *arena_alloc(size_t resereved_size, size_t alignment);
 void arena_release(Arena *arena);
 
@@ -23,6 +28,9 @@ void *arena_push_copy(Arena *arena, size_t size, void *to_copy);
 
 void arena_pop(Arena *arena, size_t size);
 void arena_clear(Arena *arena);
+
+ArenaTemp arena_temp_get(Arena **conflicts, size_t conflict_count);
+void arena_temp_release(ArenaTemp arena);
 
 inline size_t arena_get_pos(Arena *arena) { return arena->pos; };
 
